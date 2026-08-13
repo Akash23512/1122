@@ -1,391 +1,888 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For My Heartbeat ❤️</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Heartbeat ❤️</title>
 
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #0d0d11;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, serif;
-            color: #ffffff;
-            user-select: none;
-            cursor: pointer;
-        }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            opacity: 0.4;
-        }
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0d0d11;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, Georgia, serif;
+    color: white;
+    user-select: none;
+}
 
-        .container {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            text-align: center;
-        }
+body {
+    cursor: pointer;
+}
 
-        .slide {
-            position: absolute;
-            opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 1s ease, transform 1s ease;
-            pointer-events: none;
-            max-width: 700px;
-            width: 90%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+/* Background */
+#bgCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0.4;
+}
 
-        .slide.active {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
+/* Main container */
+.container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
 
-        .slide h1 {
-            font-size: 1.8rem;
-            font-weight: 300;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            color: #f3f3f5;
-        }
+/* Slides */
+.slide {
+    position: absolute;
+    width: 90%;
+    max-width: 700px;
 
-        .slide span {
-            display: inline-block;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #ffb3c1;
-            opacity: 0.8;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-        /* Interactive Momo Coupon Button */
-        .coupon-btn {
-            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
-            color: #ffffff;
-            border: none;
-            padding: 0.8rem 1.6rem;
-            font-size: 0.95rem;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 0.5rem;
-            margin-bottom: 1.2rem;
-            box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+    opacity: 0;
+    transform: translateY(15px);
 
-        .coupon-btn:active {
-            transform: scale(0.95);
-        }
+    transition:
+        opacity 1s ease,
+        transform 1s ease;
 
-        /* Secret Note Card Styling */
-        .letter-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 179, 193, 0.3);
-            border-radius: 16px;
-            padding: 1.8rem;
-            margin-bottom: 1.5rem;
-            width: 100%;
-            max-width: 520px;
-            backdrop-filter: blur(5px);
-            transition: all 0.4s ease;
-        }
+    pointer-events: none;
+}
 
-        .letter-preview {
-            font-size: 1rem;
-            color: #ffb3c1;
-            letter-spacing: 1px;
-        }
+.slide.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
 
-        .letter-body {
-            display: none;
-            font-size: 1rem;
-            line-height: 1.7;
-            color: #f3f3f5;
-            font-style: italic;
-        }
+.slide h1 {
+    font-size: 1.8rem;
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+    color: #f3f3f5;
+}
 
-        .letter-card.open .letter-preview {
-            display: none;
-        }
+.slide span {
+    display: inline-block;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #ffb3c1;
+    opacity: 0.8;
+}
 
-        .letter-card.open .letter-body {
-            display: block;
-        }
+/* Momo button */
+.coupon-btn {
+    background: linear-gradient(
+        135deg,
+        #ff758c,
+        #ff7eb3
+    );
 
-        /* Beating Heart Styling */
-        .beating-heart {
-            font-size: 3.8rem;
-            margin-top: 1rem;
-            display: inline-block;
-            animation: heartbeat 1.2s infinite ease-in-out;
-            cursor: pointer;
-            filter: drop-shadow(0 0 14px rgba(255, 77, 109, 0.7));
-            transition: transform 0.2s ease;
-        }
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    font-size: 0.95rem;
+    border-radius: 25px;
 
-        .beating-heart:active {
-            transform: scale(0.85);
-        }
+    cursor: pointer;
 
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            14% { transform: scale(1.25); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.25); }
-            70% { transform: scale(1); }
-        }
+    margin-top: 8px;
+    margin-bottom: 20px;
 
-        .secret-note {
-            margin-top: 1.2rem;
-            font-size: 0.95rem;
-            color: #ffc2d1;
-            font-style: italic;
-            min-height: 24px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
+    box-shadow:
+        0 4px 15px rgba(255, 117, 140, 0.4);
 
-        .hint {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #a0a0ab;
-            animation: pulse 2s infinite;
-        }
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-        }
+.coupon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 20px rgba(255, 117, 140, 0.6);
+}
 
-        @media (max-width: 600px) {
-            .slide h1 {
-                font-size: 1.4rem;
-                line-height: 1.5;
-            }
-            .beating-heart {
-                font-size: 3.2rem;
-            }
-        }
-    </style>
+.coupon-btn:active {
+    transform: scale(0.95);
+}
+
+/* Secret letter */
+.letter-card {
+    width: 100%;
+    max-width: 520px;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    border: 1px solid rgba(255, 179, 193, 0.3);
+
+    border-radius: 16px;
+
+    padding: 28px;
+
+    margin-bottom: 24px;
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    cursor: pointer;
+
+    transition: all 0.4s ease;
+}
+
+.letter-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.letter-preview {
+    font-size: 1rem;
+    color: #ffb3c1;
+    letter-spacing: 1px;
+}
+
+.letter-body {
+    display: none;
+
+    font-size: 1rem;
+    line-height: 1.7;
+
+    color: #f3f3f5;
+
+    font-style: italic;
+}
+
+.letter-card.open .letter-preview {
+    display: none;
+}
+
+.letter-card.open .letter-body {
+    display: block;
+}
+
+/* Heart */
+.beating-heart {
+    font-size: 3.8rem;
+
+    margin-top: 15px;
+
+    display: inline-block;
+
+    cursor: pointer;
+
+    animation:
+        heartbeat 1.2s infinite ease-in-out;
+
+    filter:
+        drop-shadow(
+            0 0 14px rgba(255, 77, 109, 0.7)
+        );
+
+    transition:
+        transform 0.2s ease;
+}
+
+.beating-heart:active {
+    transform: scale(0.85);
+}
+
+@keyframes heartbeat {
+
+    0% {
+        transform: scale(1);
+    }
+
+    14% {
+        transform: scale(1.25);
+    }
+
+    28% {
+        transform: scale(1);
+    }
+
+    42% {
+        transform: scale(1.25);
+    }
+
+    70% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Secret message */
+.secret-note {
+    margin-top: 20px;
+
+    font-size: 0.95rem;
+
+    color: #ffc2d1;
+
+    font-style: italic;
+
+    min-height: 24px;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.5s ease;
+}
+
+/* Bottom hint */
+.hint {
+    position: fixed;
+
+    bottom: 30px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 3;
+
+    font-size: 0.8rem;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    color: #a0a0ab;
+
+    animation:
+        pulse 2s infinite;
+
+    white-space: nowrap;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    .slide h1 {
+        font-size: 1.4rem;
+        line-height: 1.5;
+    }
+
+    .beating-heart {
+        font-size: 3.2rem;
+    }
+
+    .letter-card {
+        padding: 22px;
+    }
+
+    .letter-body {
+        font-size: 0.95rem;
+    }
+}
+</style>
 </head>
+
 <body>
 
-    <!-- Subtle Floating Particles Canvas -->
-    <canvas id="bgCanvas"></canvas>
+<!-- Background particles -->
+<canvas id="bgCanvas"></canvas>
 
-    <!-- Main Text Content Slides -->
-    <div class="container">
-        
-        <!-- Slide 1 -->
-        <div class="slide active">
-            <h1>Hey... I know today feels heavy,<br>so first: take a deep breath, my Heartbeat.</h1>
-            <span>Take It Easy</span>
-        </div>
+<!-- Slides -->
+<div class="container">
 
-        <!-- Slide 2 -->
-        <div class="slide">
-            <h1>It’s completely okay to have off days.<br>You don’t have to force a smile right now.</h1>
-            <span>No Pressure</span>
-        </div>
+    <!-- Slide 1 -->
+    <div class="slide active">
 
-        <!-- Slide 3 -->
-        <div class="slide">
-            <h1>Whenever your mood feels low,<br>remember that I’m right here beside you.</h1>
-            <span>Safe Harbor</span>
-        </div>
+        <h1>
+            Hey... I know today feels heavy,
+            <br>
+            so first: take a deep breath, my Heartbeat.
+        </h1>
 
-        <!-- Slide 4 -->
-        <div class="slide">
-            <h1>You handle so much every single day,<br>and I am always so proud of you.</h1>
-            <span>Gentle Reminder</span>
-        </div>
-
-        <!-- Slide 5 (Interactive Momo Coupon) -->
-        <div class="slide">
-            <h1>Whatever is bothering you can wait.<br>Let’s just relax and get your favorite momos later. 🥟</h1>
-            <button class="coupon-btn" id="momoBtn">Claim Momo Date 🎟️</button>
-            <span>Momos Remedy</span>
-        </div>
-
-        <!-- Slide 6 (Custom Secret Unfold Card) -->
-        <div class="slide">
-            <div class="letter-card" id="letterCard">
-                <p class="letter-preview">✉️ Tap to open a private note...</p>
-                <p class="letter-body">"My Heartbeat, mujhe nahi pata ki tumhare sath kya hua hai par mai tumhe aisa dekha nahi chahta. I know tum isse behtar ho, strong ho. So just here to let you know my love towards you will never change a bit. I adore you same as I adored you at the beginning. So jaldi se theek ho jao and mujhe batao akhir hua kya hai tumhe... and lastly, I love you so much 💖 Nobody can replace my unparalleled love towards you."</p>
-            </div>
-            <span>Just For You</span>
-        </div>
-
-        <!-- Slide 7 (End Slide) -->
-        <div class="slide">
-            <h1>No matter how tough the day was,<br>you’re deeply loved—always and unconditionally.</h1>
-            <div class="beating-heart" id="heartBtn">❤️</div>
-            <div class="secret-note" id="secretNote">Tap the heart to collect a hug 🤗</div>
-            <span style="margin-top: 1rem;">Always My Heartbeat</span>
-        </div>
+        <span>Take It Easy</span>
 
     </div>
 
-    <!-- Instruction Hint -->
-    <div class="hint" id="hint">Tap anywhere to continue</div>
 
-    <!-- Background Audio -->
-    <audio id="bgMusic" loop preload="auto">
-        <source src="music.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Slide 2 -->
+    <div class="slide">
 
-    <script>
-        // Slide Navigation Logic
-        const slides = document.querySelectorAll('.slide');
-        const hint = document.getElementById('hint');
-        const audio = document.getElementById('bgMusic');
-        const heartBtn = document.getElementById('heartBtn');
-        const momoBtn = document.getElementById('momoBtn');
-        const letterCard = document.getElementById('letterCard');
-        const secretNote = document.getElementById('secretNote');
-        
-        let currentSlide = 0;
-        let musicStarted = false;
-        let hugCount = 0;
+        <h1>
+            It’s completely okay to have off days.
+            <br>
+            You don’t have to force a smile right now.
+        </h1>
 
-        document.addEventListener('click', advanceSlide);
-        document.addEventListener('touchstart', advanceSlide);
+        <span>No Pressure</span>
 
-        function advanceSlide(e) {
-            // Prevent slide advancing when clicking interactive elements directly
-            if (e.target === heartBtn || e.target === momoBtn || letterCard.contains(e.target)) return;
+    </div>
 
-            if (!musicStarted && audio) {
-                audio.play().catch(() => {});
-                musicStarted = true;
-            }
 
-            if (currentSlide < slides.length - 1) {
-                slides[currentSlide].classList.remove('active');
-                currentSlide++;
-                slides[currentSlide].classList.add('active');
+    <!-- Slide 3 -->
+    <div class="slide">
 
-                if (currentSlide === slides.length - 1) {
-                    hint.style.display = 'none';
-                    setTimeout(() => { secretNote.style.opacity = '1'; }, 800);
-                }
-            }
-        }
+        <h1>
+            Whenever your mood feels low,
+            <br>
+            remember that I’m right here beside you.
+        </h1>
 
-        // Secret Note Unfold Toggle
-        letterCard.addEventListener('click', (e) => {
-            e.stopPropagation();
-            letterCard.classList.toggle('open');
-        });
+        <span>Safe Harbor</span>
 
-        // Momo Coupon Claim Interaction
-        momoBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            alert("Coupon Redeemed! 🥟 One plate of hot momos reserved for My Heartbeat tonight!");
-        });
+    </div>
 
-        // Heart Burst & Hug Counter
-        heartBtn.addEventListener('click', handleHeartClick);
-        heartBtn.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-            handleHeartClick(e.touches[0]);
-        });
 
-        function handleHeartClick(e) {
-            hugCount++;
-            secretNote.innerHTML = `Virtual Hug #${hugCount} delivered to My Heartbeat! 🤗❤️`;
-            secretNote.style.opacity = '1';
+    <!-- Slide 4 -->
+    <div class="slide">
 
-            const clickX = e.clientX || window.innerWidth / 2;
-            const clickY = e.clientY || window.innerHeight / 2;
+        <h1>
+            You handle so much every single day,
+            <br>
+            and I am always so proud of you.
+        </h1>
 
-            for (let i = 0; i < 10; i++) {
-                const miniHeart = document.createElement('div');
-                miniHeart.innerHTML = '❤️';
-                miniHeart.style.position = 'fixed';
-                miniHeart.style.left = `${clickX}px`;
-                miniHeart.style.top = `${clickY}px`;
-                miniHeart.style.fontSize = `${Math.random() * 18 + 14}px`;
-                miniHeart.style.pointerEvents = 'none';
-                miniHeart.style.transition = 'all 1.2s cubic-bezier(0.25, 1, 0.5, 1)';
-                miniHeart.style.opacity = '1';
-                miniHeart.style.zIndex = '100';
+        <span>Gentle Reminder</span>
 
-                document.body.appendChild(miniHeart);
+    </div>
 
-                const offsetX = (Math.random() - 0.5) * 200;
-                const offsetY = -Math.random() * 200 - 50;
 
-                requestAnimationFrame(() => {
-                    miniHeart.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(0.6)`;
-                    miniHeart.style.opacity = '0';
-                });
+    <!-- Slide 5 -->
+    <div class="slide">
 
-                setTimeout(() => miniHeart.remove(), 1200);
-            }
-        }
+        <h1>
+            Whatever is bothering you can wait.
+            <br>
+            Let’s just relax and get your favorite momos later. 🥟
+        </h1>
 
-        // Background Particle Animation
-        const canvas = document.getElementById('bgCanvas');
-        const ctx = canvas.getContext('2d');
+        <button
+            class="coupon-btn"
+            id="momoBtn">
+            Claim Momo Date 🎟️
+        </button>
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        <span>Momos Remedy</span>
 
-        const particles = Array.from({ length: 45 }, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 1.8 + 0.5,
-            speedY: -(Math.random() * 0.3 + 0.1),
-            opacity: Math.random() * 0.6 + 0.2
-        }));
+    </div>
 
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.y += p.speedY;
-                if (p.y < 0) p.y = canvas.height;
-                ctx.fillStyle = `rgba(255, 179, 193, ${p.opacity})`;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
+
+    <!-- Slide 6 -->
+    <div class="slide">
+
+        <div
+            class="letter-card"
+            id="letterCard">
+
+            <p class="letter-preview">
+                ✉️ Tap to open a private note...
+            </p>
+
+            <p class="letter-body">
+                "My Heartbeat, mujhe nahi pata ki tumhare sath kya
+                hua hai par mai tumhe aisa dekha nahi chahta.
+                I know tum isse behtar ho, strong ho.
+
+                So just here to let you know my love towards you
+                will never change a bit.
+
+                I adore you same as I adored you at the beginning.
+
+                So jaldi se theek ho jao and mujhe batao akhir hua
+                kya hai tumhe...
+
+                And lastly, I love you so much 💖
+
+                Nobody can replace my unparalleled love towards you."
+            </p>
+
+        </div>
+
+        <span>Just For You</span>
+
+    </div>
+
+
+    <!-- Slide 7 -->
+    <div class="slide">
+
+        <h1>
+            No matter how tough the day was,
+            <br>
+            you’re deeply loved—
+            always and unconditionally.
+        </h1>
+
+        <div
+            class="beating-heart"
+            id="heartBtn">
+            ❤️
+        </div>
+
+        <div
+            class="secret-note"
+            id="secretNote">
+            Tap the heart to collect a hug 🤗
+        </div>
+
+        <span style="margin-top: 15px;">
+            Always My Heartbeat
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- Bottom instruction -->
+<div
+    class="hint"
+    id="hint">
+    Tap anywhere to continue
+</div>
+
+
+<!-- Background music -->
+<audio
+    id="bgMusic"
+    loop
+    preload="auto">
+
+    <source
+        src="music.mp3"
+        type="audio/mpeg">
+
+</audio>
+
+
+<script>
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const slides =
+    document.querySelectorAll(".slide");
+
+const hint =
+    document.getElementById("hint");
+
+const audio =
+    document.getElementById("bgMusic");
+
+const heartBtn =
+    document.getElementById("heartBtn");
+
+const momoBtn =
+    document.getElementById("momoBtn");
+
+const letterCard =
+    document.getElementById("letterCard");
+
+const secretNote =
+    document.getElementById("secretNote");
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let currentSlide = 0;
+
+let musicStarted = false;
+
+let hugCount = 0;
+
+
+/* =========================
+   START MUSIC
+========================= */
+
+function startMusic() {
+
+    if (musicStarted) return;
+
+    musicStarted = true;
+
+    audio.volume = 0.5;
+
+    audio.play().catch(() => {
+        console.log(
+            "Music will start after another user interaction."
+        );
+    });
+}
+
+
+/* =========================
+   SLIDE NAVIGATION
+========================= */
+
+function advanceSlide(event) {
+
+    /*
+       Ignore clicks on interactive
+       elements.
+    */
+
+    if (
+        event.target === heartBtn ||
+        event.target === momoBtn ||
+        letterCard.contains(event.target)
+    ) {
+        return;
+    }
+
+    startMusic();
+
+    if (currentSlide >= slides.length - 1) {
+        return;
+    }
+
+    slides[currentSlide]
+        .classList
+        .remove("active");
+
+    currentSlide++;
+
+    slides[currentSlide]
+        .classList
+        .add("active");
+
+
+    /* Last slide */
+
+    if (
+        currentSlide ===
+        slides.length - 1
+    ) {
+
+        hint.style.display = "none";
+
+        setTimeout(() => {
+
+            secretNote.style.opacity = "1";
+
+        }, 800);
+    }
+}
+
+
+/*
+   Use pointer events instead of
+   separate click + touchstart.
+
+   This prevents double navigation
+   on mobile browsers.
+*/
+
+document.addEventListener(
+    "pointerup",
+    advanceSlide
+);
+
+
+/* =========================
+   SECRET LETTER
+========================= */
+
+letterCard.addEventListener(
+    "pointerup",
+    function(event) {
+
+        event.stopPropagation();
+
+        letterCard.classList.toggle("open");
+    }
+);
+
+
+/* =========================
+   MOMO COUPON
+========================= */
+
+momoBtn.addEventListener(
+    "pointerup",
+    function(event) {
+
+        event.stopPropagation();
+
+        startMusic();
+
+        alert(
+            "Coupon Redeemed! 🥟\n\n" +
+            "One plate of hot momos reserved " +
+            "for My Heartbeat tonight! ❤️"
+        );
+    }
+);
+
+
+/* =========================
+   HEART INTERACTION
+========================= */
+
+heartBtn.addEventListener(
+    "pointerup",
+    function(event) {
+
+        event.stopPropagation();
+
+        startMusic();
+
+        hugCount++;
+
+        secretNote.innerHTML =
+            `Virtual Hug #${hugCount} delivered ` +
+            `to My Heartbeat! 🤗❤️`;
+
+        secretNote.style.opacity = "1";
+
+
+        /*
+           Get click position
+        */
+
+        const clickX =
+            event.clientX ||
+            window.innerWidth / 2;
+
+        const clickY =
+            event.clientY ||
+            window.innerHeight / 2;
+
+
+        /*
+           Create floating hearts
+        */
+
+        for (
+            let i = 0;
+            i < 10;
+            i++
+        ) {
+
+            const miniHeart =
+                document.createElement("div");
+
+            miniHeart.innerHTML = "❤️";
+
+            miniHeart.style.position =
+                "fixed";
+
+            miniHeart.style.left =
+                `${clickX}px`;
+
+            miniHeart.style.top =
+                `${clickY}px`;
+
+            miniHeart.style.fontSize =
+                `${Math.random() * 18 + 14}px`;
+
+            miniHeart.style.pointerEvents =
+                "none";
+
+            miniHeart.style.transition =
+                "all 1.2s cubic-bezier(0.25,1,0.5,1)";
+
+            miniHeart.style.opacity = "1";
+
+            miniHeart.style.zIndex = "100";
+
+            document.body.appendChild(
+                miniHeart
+            );
+
+
+            const offsetX =
+                (Math.random() - 0.5) * 200;
+
+            const offsetY =
+                -Math.random() * 200 - 50;
+
+
+            requestAnimationFrame(() => {
+
+                miniHeart.style.transform =
+                    `translate(${offsetX}px, ${offsetY}px) scale(0.6)`;
+
+                miniHeart.style.opacity = "0";
+
             });
-            requestAnimationFrame(animateParticles);
+
+
+            setTimeout(() => {
+
+                miniHeart.remove();
+
+            }, 1200);
         }
-        animateParticles();
-    </script>
+    }
+);
+
+
+/* =========================
+   PARTICLE BACKGROUND
+========================= */
+
+const canvas =
+    document.getElementById(
+        "bgCanvas"
+    );
+
+const ctx =
+    canvas.getContext("2d");
+
+
+function resizeCanvas() {
+
+    canvas.width =
+        window.innerWidth;
+
+    canvas.height =
+        window.innerHeight;
+}
+
+
+resizeCanvas();
+
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+
+/* Create particles */
+
+const particles =
+    Array.from(
+        { length: 45 },
+        () => ({
+
+            x:
+                Math.random() *
+                canvas.width,
+
+            y:
+                Math.random() *
+                canvas.height,
+
+            size:
+                Math.random() *
+                1.8 +
+                0.5,
+
+            speedY:
+                -(Math.random() *
+                0.3 +
+                0.1),
+
+            opacity:
+                Math.random() *
+                0.6 +
+                0.2
+
+        })
+    );
+
+
+/* Animate particles */
+
+function animateParticles() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    particles.forEach(
+        particle => {
+
+            particle.y +=
+                particle.speedY;
+
+
+            if (
+                particle.y < 0
+            ) {
+
+                particle.y =
+                    canvas.height;
+            }
+
+
+            ctx.fillStyle =
+                `rgba(
+                    255,
+                    179,
+                    193,
+                    ${particle.opacity}
+                )`;
+
+
+            ctx.beginPath();
+
+
+            ctx.arc(
+                particle.x,
+                particle.y,
+                particle.size,
+                0,
+                Math.PI * 2
+            );
+
+
+            ctx.fill();
+        }
+    );
+
+
+    requestAnimationFrame(
+        animateParticles
+    );
+}
+
+
+animateParticles();
+
+</script>
+
 </body>
 </html>
